@@ -3,6 +3,11 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
+/**
+ * PayslipServer
+ *
+ * A server object used to create, setup, start, and close the server.
+ */
 class PayslipServer {
   constructor(staticPath) {
     this.staticPath = staticPath;
@@ -10,6 +15,10 @@ class PayslipServer {
     this.server = null;
   }
 
+  /**
+   * Will initialize and start a new instance of the server with the port number given
+   * @parm port Number to start the server on
+   */
   init(port) {
     if (port === undefined || port === null) {
       return;
@@ -29,6 +38,9 @@ class PayslipServer {
     this.server = app.listen(port, () => console.log(`server running on port ${port}`));
   }
 
+  /**
+   * Will terminate the instance of the server that is running
+   */
   close() {
     if (this.server) {
       this.server.close();

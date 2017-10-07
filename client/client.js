@@ -1,11 +1,10 @@
-((window, document, $) => {
+((document, $) => {
   $(() => {
     function onLoadEnd(evt) {
       $.post('/payslips', { payslips: evt.target.result })
-      .done((data) => {
-        if (data.failedNames.length) {
-          const failedNames = data.failedNames.join('\n');
-          alert(`Payslips failed to generate for the following names:\n${failedNames}`);
+      .done((error) => {
+        if (error) {
+          alert(error.message);
         } else {
           alert('All data uploaded successfully');
         }
@@ -31,4 +30,4 @@
       }
     };
   });
-})(window, document, jQuery);
+})(document, jQuery);

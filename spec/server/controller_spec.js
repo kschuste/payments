@@ -1,6 +1,7 @@
 /* global describe it expect spyOn */
 const { PayslipController } = require('../../server/controller');
 const { Payslip } = require('../../server/payslip');
+const { PayslipCalculator } = require('../../server/payslip_calculator');
 const fs = require('fs');
 const sinon = require('sinon');
 
@@ -9,7 +10,7 @@ describe('PayslipController', () => {
     it('returns a PayslipController object', () => {
       const controller = new PayslipController();
 
-      expect(controller.payslips).toEqual([]);
+      expect(controller.failedNames).toEqual([]);
       expect(controller.payslipIdCounter).toEqual(0);
     });
   });
@@ -24,7 +25,7 @@ describe('PayslipController', () => {
 
       expect(createPayslipsSpy.calls.length).toEqual(0);
       expect(writePayslipsSpy.calls.length).toEqual(0);
-      expect(response).toEqual({ error: 'Invalid data submitted' });
+      expect(response).toEqual({ message: 'Invalid data submitted' });
     });
 
     it('will not create and write the payslips null param given', () => {
@@ -36,7 +37,7 @@ describe('PayslipController', () => {
 
       expect(createPayslipsSpy.calls.length).toEqual(0);
       expect(writePayslipsSpy.calls.length).toEqual(0);
-      expect(response).toEqual({ error: 'Invalid data submitted' });
+      expect(response).toEqual({ message: 'Invalid data submitted' });
     });
 
     it('will not create and write the payslips when invalid param type given', () => {
@@ -48,156 +49,158 @@ describe('PayslipController', () => {
 
       expect(createPayslipsSpy.calls.length).toEqual(0);
       expect(writePayslipsSpy.calls.length).toEqual(0);
-      expect(response).toEqual({ error: 'Invalid data submitted' });
+      expect(response).toEqual({ message: 'Invalid data submitted' });
     });
 
     it('will create and write the payslips', () => {
       const controller = new PayslipController();
-      const createPayslipsSpy = spyOn(controller, 'createPayslips');
+      const mockController = sinon.mock(controller);
+      mockController.expects('createPayslips').once().returns([new Payslip()]);
       const writePayslipsSpy = spyOn(controller, 'writePayslips');
 
       const response = controller.postPayslips({ payslips: 'data to post' });
 
-      expect(createPayslipsSpy.calls.length).toEqual(1);
+      mockController.verify();
+      mockController.restore();
       expect(writePayslipsSpy.calls.length).toEqual(1);
       expect(response).toEqual({});
     });
 
     it('will create and write the payslips and return the failedNames of the failed payslips', () => {
       const controller = new PayslipController();
-      controller.failedNames = ['Test1', 'Test2'];
-      const createPayslipsSpy = spyOn(controller, 'createPayslips');
+      controller.failedNames = ['Test1'];
+      const mockController = sinon.mock(controller);
+      mockController.expects('createPayslips').once().returns([new Payslip(), new Payslip()]);
       const writePayslipsSpy = spyOn(controller, 'writePayslips');
 
       const response = controller.postPayslips({ payslips: 'data to post' });
 
-      expect(createPayslipsSpy.calls.length).toEqual(1);
+      mockController.verify();
+      mockController.restore();
       expect(writePayslipsSpy.calls.length).toEqual(1);
-      expect(response).toEqual({ error: 'Payslips failed to generate for the following names:\nTest1\nTest2' });
+      expect(response).toEqual({ message: 'Payslips failed to generate for the following names:\nTest1' });
       expect(controller.failedNames.length).toEqual(0);
     });
   });
 
   describe('createPayslips', () => {
     it('will create the payslips for each new line', () => {
+      const payslip = new Payslip();
+      const mockPayslip = sinon.mock(payslip);
+      mockPayslip.expects('isValid').thrice().returns(true);
+
+      const mockCacluator = sinon.mock(PayslipCalculator);
+      mockCacluator.expects('calculatePayslip').thrice();
+
       const controller = new PayslipController();
-      const createPayslipSpy = spyOn(controller, 'createPayslip');
+      const mockController = sinon.mock(controller);
+      mockController.expects('createPayslip').thrice().returns(payslip);
 
-      controller.createPayslips('test1\ntest2\ntest3');
+      const createdPayslips = controller.createPayslips('test1\ntest2\ntest3');
 
-      expect(createPayslipSpy.calls.length).toEqual(3);
-      expect(createPayslipSpy.calls[0].args[0]).toEqual('test1');
-      expect(createPayslipSpy.calls[1].args[0]).toEqual('test2');
-      expect(createPayslipSpy.calls[2].args[0]).toEqual('test3');
+      expect(createdPayslips.length).toEqual(3);
+      mockController.verify();
+      mockController.restore();
+      mockPayslip.verify();
+      mockPayslip.restore();
+      mockCacluator.verify();
+      mockCacluator.restore();
+      expect(controller.payslipIdCounter).toEqual(3);
     });
 
     it('will create a payslip using data that is single line with no line breaks', () => {
+      const payslip = new Payslip();
+      const mockPayslip = sinon.mock(payslip);
+      mockPayslip.expects('isValid').once().returns(true);
+
+      const mockCacluator = sinon.mock(PayslipCalculator);
+      mockCacluator.expects('calculatePayslip').once();
+
       const controller = new PayslipController();
-      const createPayslipSpy = spyOn(controller, 'createPayslip');
+      const mockController = sinon.mock(controller);
+      mockController.expects('createPayslip').once().returns(payslip);
 
-      controller.createPayslips('test1');
+      const createdPayslips = controller.createPayslips('test1');
 
-      expect(createPayslipSpy.calls.length).toEqual(1);
-      expect(createPayslipSpy.calls[0].args[0]).toEqual('test1');
+      expect(createdPayslips.length).toEqual(1);
+      mockController.verify();
+      mockController.restore();
+      mockPayslip.verify();
+      mockPayslip.restore();
+      mockCacluator.verify();
+      mockCacluator.restore();
+      expect(controller.payslipIdCounter).toEqual(1);
     });
 
     it('will not create a payslip for an invalid param given', () => {
       const controller = new PayslipController();
       const createPayslipSpy = spyOn(controller, 'createPayslip');
 
-      controller.createPayslips(1000);
+      const createdPayslips = controller.createPayslips(1000);
 
+      expect(createdPayslips.length).toEqual(0);
       expect(createPayslipSpy.calls.length).toEqual(0);
+      expect(controller.payslipIdCounter).toEqual(0);
     });
 
     it('will not create a payslip for a null param given', () => {
       const controller = new PayslipController();
       const createPayslipSpy = spyOn(controller, 'createPayslip');
 
-      controller.createPayslips(null);
+      const createdPayslips = controller.createPayslips(null);
 
+      expect(createdPayslips.length).toEqual(0);
       expect(createPayslipSpy.calls.length).toEqual(0);
+      expect(controller.payslipIdCounter).toEqual(0);
     });
 
     it('will not create a payslip for no param given', () => {
       const controller = new PayslipController();
       const createPayslipSpy = spyOn(controller, 'createPayslip');
 
-      controller.createPayslips();
+      const createdPayslips = controller.createPayslips();
 
+      expect(createdPayslips.length).toEqual(0);
       expect(createPayslipSpy.calls.length).toEqual(0);
+      expect(controller.payslipIdCounter).toEqual(0);
     });
   });
 
   describe('createPayslip', () => {
     it('will not create the payslip when the data given is undefined', () => {
       const controller = new PayslipController();
-
-      controller.createPayslip(undefined);
-
-      expect(controller.payslips.length).toEqual(0);
-      expect(controller.payslipIdCounter).toEqual(0);
+      const payslip = controller.createPayslip(undefined);
+      expect(payslip).toEqual(null);
     });
 
     it('will not create the payslip when the data given is null', () => {
       const controller = new PayslipController();
-
-      controller.createPayslip(null);
-
-      expect(controller.payslips.length).toEqual(0);
-      expect(controller.payslipIdCounter).toEqual(0);
+      const payslip = controller.createPayslip(null);
+      expect(payslip).toEqual(null);
     });
 
     it('will not create the payslip when the data given is of wrong type', () => {
       const controller = new PayslipController();
-
-      controller.createPayslip(10000);
-
-      expect(controller.payslips.length).toEqual(0);
-      expect(controller.payslipIdCounter).toEqual(0);
+      const payslip = controller.createPayslip(10000);
+      expect(payslip).toEqual(null);
     });
 
     it('will not add the payslip when the created payslip is missing information', () => {
       const controller = new PayslipController();
-      const payslip = new Payslip();
-      sinon.stub(payslip, 'isValid').returns(false);
-
-      controller.createPayslip('firstName,lastName,10000,10%');
-
-      expect(controller.payslips.length).toEqual(0);
-      expect(controller.payslipIdCounter).toEqual(0);
+      const payslip = controller.createPayslip('firstName,lastName,10000,10%');
+      expect(payslip).toEqual(null);
     });
 
-    it('will not add the payslip when the created payslip is not valid', () => {
+    it('will add the payslip when the created payslip has all information', () => {
       const controller = new PayslipController();
-      const payslip = new Payslip();
-      sinon.stub(payslip, 'isValid').returns(false);
-
-      controller.createPayslip('firstName,lastName,10000,10,01 March - 31 March');
-
-      expect(controller.payslips.length).toEqual(0);
-      expect(controller.payslipIdCounter).toEqual(0);
-      expect(controller.failedNames.length).toEqual(1);
-      expect(controller.failedNames[0]).toEqual('firstName lastName');
-    });
-
-    it('will add the payslip when the created payslip is valid', () => {
-      const controller = new PayslipController();
-      const payslip = new Payslip();
-      sinon.stub(payslip, 'isValid').returns(true);
-      const calculatePayslipSpy = sinon.spy(payslip, 'calculatePayslip');
-
-      controller.createPayslip('firstName,lastName,10000,10%,01 March - 31 March');
-
-      expect(controller.payslips.length).toEqual(1);
-      expect(controller.payslipIdCounter).toEqual(1);
-      expect(calculatePayslipSpy.called).toEqual(false);
+      const payslip = controller.createPayslip('firstName,lastName,10000,10%,01 March - 31 March');
+      expect(payslip).not.toEqual(null);
     });
   });
 
 
   describe('writePayslips', () => {
-    it('will not write the payslips none exist', () => {
+    it('will not write the payslips when no param given', () => {
       const controller = new PayslipController();
       const fsSpy = spyOn(fs, 'open');
 
@@ -206,18 +209,35 @@ describe('PayslipController', () => {
       expect(fsSpy.calls.length).toEqual(0);
     });
 
+    it('will not write the payslips when null param given', () => {
+      const controller = new PayslipController();
+      const fsSpy = spyOn(fs, 'open');
+
+      controller.writePayslips(null);
+
+      expect(fsSpy.calls.length).toEqual(0);
+    });
+
+    it('will not write the payslips an empty array given', () => {
+      const controller = new PayslipController();
+      const fsSpy = spyOn(fs, 'open');
+
+      controller.writePayslips([]);
+
+      expect(fsSpy.calls.length).toEqual(0);
+    });
+
     it('will write all the payslips to file', () => {
       const controller = new PayslipController();
       const payslip1 = new Payslip();
       const payslip2 = new Payslip();
-      controller.payslips = [payslip1, payslip2];
 
       const mockFs = sinon.mock(fs);
       mockFs.expects('open').once();
       const mockController = sinon.mock(controller, 'writePayslip');
       mockController.expects('writePayslip').twice();
 
-      controller.writePayslips();
+      controller.writePayslips([payslip1, payslip2]);
 
       mockFs.verify();
       mockFs.restore();
@@ -234,7 +254,7 @@ describe('PayslipController', () => {
       expect(fsSpy.calls.length).toEqual(0);
     });
 
-    it('will not write the payslip to file if it is undefined', () => {
+    it('will not write the payslip to file if it is null', () => {
       const controller = new PayslipController();
       const fsSpy = spyOn(fs, 'appendFileSync');
       controller.writePayslip(null);
