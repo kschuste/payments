@@ -1,0 +1,15 @@
+{
+  "extends": "airbnb",
+  "env": {
+    "browser": true,
+  },
+  "globals": {
+    "jQuery": true,
+  },
+  "rules": {
+    "jsx-a11y/href-no-hash": "off",
+    "jsx-a11y/img-has-alt": "off",
+    "no-console": "off",
+    "no-alert": "off",
+  }
+}

@@ -1,0 +1,14 @@
+Cub,Bear,0,9%,01	January	– 31	January
+Fawn,Deer,18200,10%,01	February	– 28	February
+Calf,Cow,18201,8%,01	March	– 31	March
+Kitty,Cat,37000,7%,01	April	– 30	April
+Puppy,Dog,37001,6%,01	May	– 31	May
+Piglet,Pig,80000,5%,01	June	– 30	June
+Duckling,Duck,80001,12%,01	July	– 31	July
+Foal,Horse,180000,15%,01	August	– 31	August
+Billy,Goat,180001,3%,01	September	– 31	September
+Lamb,Sheep,200000,1%,01	October	– 31	October
+Chick,Chicken,-1,2%,01	November	– 30	November
+Gosling,Goose,30000,60%,01	December	– 31	December
+,Chicken,-1,2%,01	November	– 30	November
+Gosling,,30000,60%,01	December	– 31	December
