@@ -40,6 +40,8 @@ class PayslipController {
       this.failedNames = [];
       return { message: `Payslips failed to generate for the following names:\n${joinedFailedNames}` };
     }
+
+    return { message: 'All data uploaded successfully' };
   }
 
   /**
@@ -99,7 +101,7 @@ class PayslipController {
     }
 
     // make the output directory if does not exist
-    if (!fs.existsSync('output')){
+    if (!fs.existsSync('output')) {
       fs.mkdirSync('output');
     }
 

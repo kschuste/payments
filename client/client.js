@@ -2,11 +2,9 @@
   $(() => {
     function onLoadEnd(evt) {
       $.post('/payslips', { payslips: evt.target.result })
-      .done((error) => {
-        if (error) {
-          alert(error.message);
-        } else {
-          alert('All data uploaded successfully');
+      .done((response) => {
+        if (response) {
+          alert(response.message);
         }
       })
       .fail((error) => {

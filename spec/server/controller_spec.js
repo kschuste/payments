@@ -63,7 +63,7 @@ describe('PayslipController', () => {
       mockController.verify();
       mockController.restore();
       expect(writePayslipsSpy.calls.length).toEqual(1);
-      expect(response).toEqual({});
+      expect(response).toEqual({ message: 'All data uploaded successfully' });
     });
 
     it('will create and write the payslips and return the failedNames of the failed payslips', () => {
