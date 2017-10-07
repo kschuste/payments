@@ -34,14 +34,12 @@ class PayslipController {
       return { message: 'Invalid data submitted' };
     }
 
-    const response = {};
     // if any failures occured, return them back to the client
     if (this.failedNames.length) {
       const joinedFailedNames = this.failedNames.join('\n');
-      response.message = `Payslips failed to generate for the following names:\n${joinedFailedNames}`;
       this.failedNames = [];
+      return { message: `Payslips failed to generate for the following names:\n${joinedFailedNames}` };
     }
-    return response;
   }
 
   /**
