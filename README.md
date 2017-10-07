@@ -2,16 +2,16 @@
 Payments is a repository containing a simple node client/server implementation that will allow the client to upload basic payment and tax information to server through a formatted .csv file placed in the server's output directory.
 
 ## Installation
-Clone the repository from github
-Navigate to the directory and execute 'npm install'
-execute 'npm run start'
-Open your browser to http://localhost:8765
+1. Clone the repository from github
+2. Navigate to the directory and execute 'npm install'
+3. execute 'npm run start'
+4. Open your browser to http://localhost:8765
 
 ## Usage
-Click the 'Choose File' button to select the .csv file to upload to the server.  Other file types are not allowed to be uploaded.
-Click the 'Submit' button to upload the data for the server.
-Will upload each record of information separately.
-Will be notified of the individual failures that do not get uploaded
+* Click the 'Choose File' button to select the .csv file to upload to the server.  Other file types are not allowed to be uploaded.
+* Click the 'Submit' button to upload the data for the server.
+* Will upload each record of information separately.
+* Will be notified of the individual failures that do not get uploaded
 
 ## Expected .csv file format
 firstName,lastName,annualSalary,superRate(%),paymentStartDate
@@ -36,5 +36,4 @@ Foal Horse,01	August – 31 August,15000,4546,10454,2250
 To execute the jasmine unit tests execute the following: 'npm run test'
 
 ## Code formatting
-Eslint is used to keep  code clean and formatted the same
-execute the following to run the linter: 'npm run lint'
+Eslint is used to keep  code clean and formatted the same.  Execute the following to run the linter: 'npm run lint'
