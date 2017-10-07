@@ -2,10 +2,10 @@
 Payments is a repository containing a simple node client/server implementation that will allow the client to upload basic payment and tax information to server through a formatted .csv file placed in the server's output directory.
 
 ## Installation
-# Clone the repository from github
-# Navigate to the directory and execute 'npm install'
-# execute 'npm run start'
-# Open your browser to http://localhost:8765
+Clone the repository from github
+Navigate to the directory and execute 'npm install'
+execute 'npm run start'
+Open your browser to http://localhost:8765
 
 ## Usage
 Click the 'Choose File' button to select the .csv file to upload to the server.  Other file types are not allowed to be uploaded.
