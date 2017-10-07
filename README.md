@@ -30,9 +30,9 @@ Foal,Horse,180000,15%,01 August – 31 August
 ## Outputted .csv file format
 ```
 firstName lastName,paymentStartDate,grossIncome,incomeTax,netIncome,super
-Piglet Pig,01	June – 30	June,6667,1462,5205,333
-Duckling Duck,01 July – 31 July,6667,1462,5205,800
-Foal Horse,01	August – 31 August,15000,4546,10454,2250
+Piglet Pig,01 June – 30 June,6667,1462,5205,333
+Duckling Duck,01 July - 31 July,6667,1462,5205,800
+Foal Horse,01 August – 31 August,15000,4546,10454,2250
 ```
 ## Testing
 To execute the jasmine unit tests execute the following: 'npm run test'
