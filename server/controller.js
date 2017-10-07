@@ -100,6 +100,11 @@ class PayslipController {
       return;
     }
 
+    // make the output directory if does not exist
+    if (!fs.existsSync('output')){
+      fs.mkdirSync('output');
+    }
+
     // create and open the file for writing
     fs.open('output/output.csv', 'wx', (err) => {
       if (err) {

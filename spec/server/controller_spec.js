@@ -233,7 +233,9 @@ describe('PayslipController', () => {
       const payslip2 = new Payslip();
 
       const mockFs = sinon.mock(fs);
-      mockFs.expects('open').once();
+      mockFs.expects('existsSync').once().withArgs('output').returns(false);
+      mockFs.expects('mkdirSync').once().withArgs('output');
+      mockFs.expects('open').once().withArgs('output/output.csv', 'wx');
       const mockController = sinon.mock(controller, 'writePayslip');
       mockController.expects('writePayslip').twice();
 
